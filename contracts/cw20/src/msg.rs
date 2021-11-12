@@ -45,6 +45,9 @@ pub enum QueryMsg {
 #[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
+    Split {},
+    // TODO: Add this later.
+    // Combine {},
     /// Transfer is a base message to move tokens to another account without triggering actions
     Transfer { recipient: String, amount: Uint128 },
     /// Send is a base message to transfer tokens to a contract and trigger an action

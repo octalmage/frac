@@ -1,6 +1,6 @@
 [package]
 edition = "2018"
-name = "cw20-tax"
+name = "cw721-to-cw20"
 version = "0.9.0"
 authors = ["Jason Stallings <octalmage@users.noreply.github.com>"]
 description = "Basic implementation of a CosmWasm-20 compliant token with 5% transfer tax"
@@ -21,6 +21,9 @@ version = "0.9.0"
 version = "0.9.0"
 
 [dependencies.cw2]
+version = "0.9.0"
+
+[dependencies.cw721]
 version = "0.9.0"
 
 [dependencies.cw20]

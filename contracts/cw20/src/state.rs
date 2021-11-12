@@ -12,13 +12,7 @@ pub struct TokenInfo {
     pub name: String,
     pub symbol: String,
     pub total_supply: Uint128,
-}
-
-#[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
-pub struct MinterData {
-    pub minter: Addr,
-    /// cap is how many more tokens can be issued by the minter
-    pub cap: Option<Uint128>,
+    pub owner : Addr,
 }
 
 pub const TOKEN_INFO: Item<TokenInfo> = Item::new("token_info");
